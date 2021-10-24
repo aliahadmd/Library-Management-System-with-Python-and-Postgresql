@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import *
 import sys
 import psycopg2  # postgresql database
 from PyQt5.uic import loadUiType
+from pyQt import *
 
 
 ui, _ = loadUiType('library.ui')  # loading the .ui file
