@@ -52,11 +52,12 @@ class MainApp(QMainWindow, ui):
 
         # Connect database functionality in UI
         self.pushButton_7.clicked.connect(self.Add_New_Book)
+        self.pushButton_9.clicked.connect(self.Search_Books)
+        self.pushButton_8.clicked.connect(self.Edit_Books)
         self.pushButton_15.clicked.connect(self.Add_Category)
         self.pushButton_16.clicked.connect(self.Add_Author)
         self.pushButton_18.clicked.connect(self.Add_Publisher)
-
-        self.pushButton_9.clicked.connect(self.Search_Books)
+        self.pushButton_10.clicked.connect(self.Delete_Books)
 
     # show theme methode
 
@@ -119,7 +120,7 @@ class MainApp(QMainWindow, ui):
         self.lineEdit_4.setText('')
 
 
-# serarch book from database and show to the UI
+# search book from database and show to the UI
 
     def Search_Books(self):
 
@@ -144,11 +145,56 @@ class MainApp(QMainWindow, ui):
         self.comboBox_8.setCurrentIndex(data[6])
         self.lineEdit_7.setText(str(data[7]))
 
+
+# edit book from database and show to the UI
+
     def Edit_Books(self):
-        pass
+        self.conn = psycopg2.connect(
+            host="localhost",
+            database="library",
+            user="postgres",
+            password="1814")
+        self.cur = self.conn.cursor()
+
+        book_title = self.lineEdit_6.text()
+        book_description = self.textEdit_2.toPlainText()
+        book_code = self.lineEdit_5.text()
+        book_category = self.comboBox_7.currentIndex()
+        book_author = self.comboBox_6.currentIndex()
+        book_publisher = self.comboBox_8.currentIndex()
+        book_price = self.lineEdit_7.text()
+
+        search_book_title = self.lineEdit_8.text()
+
+        self.cur.execute('''
+            UPDATE book SET book_name=%s, book_description=%s, book_code=%s, book_category=%s, book_author=%s, book_publisher=%s, book_price=%s WHERE book_name= %s
+            ''', (book_title, book_description, book_code, book_category, book_author, book_publisher, book_price, search_book_title))
+
+        self.conn.commit()
+        self.statusBar().showMessage('book updated')
+
+
+# delete book from database and show to the UI
+
 
     def Delete_Books(self):
-        pass
+        self.conn = psycopg2.connect(
+            host="localhost",
+            database="library",
+            user="postgres",
+            password="1814")
+        self.cur = self.conn.cursor()
+
+        book_title = self.lineEdit_6.text()
+
+        warning = QMessageBox.warning(
+            self, 'Delete Book', "Are you sure?", QMessageBox.Yes | QMessageBox.No)
+        if warning == QMessageBox.Yes:
+            sql = '''DELETE FROM book WHERE book_name=%s'''
+            self.cur.execute(sql, [(book_title)])
+            self.conn.commit()
+            self.statusBar().showMessage('Book Deleted')
+
 
 # Initialize Database in Users page
 
