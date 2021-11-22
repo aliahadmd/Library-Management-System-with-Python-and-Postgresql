@@ -24,6 +24,9 @@ class MainApp(QMainWindow, ui):
         self.show_author()
         self.show_category()
         self.show_publisher()
+        self.show_category_combobox()
+        self.show_author_combobox()
+        self.show_publisher_combobox()
 
     #working with  ui#
 
@@ -79,7 +82,6 @@ class MainApp(QMainWindow, ui):
 
 
 # initialize Database in Book page
-
 
     def Add_New_Book(self):
         self.conn = psycopg2.connect(
@@ -145,7 +147,6 @@ class MainApp(QMainWindow, ui):
         self.cur = self.conn.cursor()
         self.cur.execute(''' SELECT category_name FROM category''')
         data = self.cur.fetchall()
-        print(data)
 
         if data:
             self.tableWidget_2.setRowCount(0)
@@ -160,7 +161,6 @@ class MainApp(QMainWindow, ui):
 
 
 # Initialize database in author page
-
 
     def Add_Author(self):
         self.conn = psycopg2.connect(
@@ -205,7 +205,6 @@ class MainApp(QMainWindow, ui):
 
 # Initialize database as apublisher
 
-
     def Add_Publisher(self):
         self.conn = psycopg2.connect(
             host="localhost",
@@ -247,6 +246,51 @@ class MainApp(QMainWindow, ui):
                 self.tableWidget_4.insertRow(row_position)
 
 # Run this app
+
+# show settings data in ui
+# add new book
+
+    def show_category_combobox(self):
+        self.conn = psycopg2.connect(
+            host="localhost",
+            database="library",
+            user="postgres",
+            password="1814")
+        self.cur = self.conn.cursor()
+        self.cur.execute('''SELECT category_name FROM category''')
+        data = self.cur.fetchall()
+
+        for category in data:
+            print(category[0])
+            self.comboBox_3.addItem(category[0])
+
+    def show_author_combobox(self):
+        self.conn = psycopg2.connect(
+            host="localhost",
+            database="library",
+            user="postgres",
+            password="1814")
+        self.cur = self.conn.cursor()
+        self.cur.execute('''SELECT author_name FROM authors''')
+        data = self.cur.fetchall()
+
+        for category in data:
+            print(category[0])
+            self.comboBox_4.addItem(category[0])
+
+    def show_publisher_combobox(self):
+        self.conn = psycopg2.connect(
+            host="localhost",
+            database="library",
+            user="postgres",
+            password="1814")
+        self.cur = self.conn.cursor()
+        self.cur.execute('''SELECT publisher_name FROM publisher''')
+        data = self.cur.fetchall()
+
+        for category in data:
+            print(category[0])
+            self.comboBox_5.addItem(category[0])
 
 
 def main():
