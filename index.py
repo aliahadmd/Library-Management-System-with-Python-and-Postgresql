@@ -3,6 +3,7 @@
 # mdaliahad@outlook.com
 # The project is made by pyQt5. Its a crossplatfrom  gui.
 # import some stuff
+
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
@@ -92,11 +93,28 @@ class MainApp(QMainWindow, ui):
         self.cur = self.conn.cursor()
 
         book_title = self.lineEdit_2.text()
+        book_description = self.textEdit.toPlainText()
         book_code = self.lineEdit_3.text()
-        book_category = self.comboBox_3.CurrentText()
-        book_author = self.comboBox_4.CurrentText()
-        book_publisher = self.comboBox_5.CurrentText()
+        book_category = self.comboBox_3.currentIndex()
+        book_author = self.comboBox_4.currentIndex()
+        book_publisher = self.comboBox_5.currentIndex()
         book_price = self.lineEdit_4.text()
+
+        self.cur.execute('''
+            INSERT INTO book(book_name, book_description, book_code, book_category, book_author, book_publisher, book_price)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            ''', (book_title, book_description, book_code, book_category, book_author, book_publisher, book_price))
+
+        self.conn.commit()
+        self.statusBar().showMessage('New Book Added')
+
+        self.lineEdit_2.setText('')
+        self.textEdit.setPlainText('')
+        self.lineEdit_3.setText('')
+        self.comboBox_3.setCurrentIndex(0)
+        self.comboBox_4.setCurrentIndex(0)
+        self.comboBox_5.setCurrentIndex(0)
+        self.lineEdit_4.setText('')
 
     def Search_Books(self):
         pass
@@ -137,6 +155,7 @@ class MainApp(QMainWindow, ui):
         self.statusBar().showMessage('New Category Added')
         self.lineEdit_21.setText('')
         self.show_category()
+        self.show_category_combobox()
 
     def show_category(self):
         self.conn = psycopg2.connect(
@@ -180,6 +199,7 @@ class MainApp(QMainWindow, ui):
         # in the statusbar this message will show.
         self.statusBar().showMessage('New Author Added')
         self.show_author()
+        self.show_author_combobox()
 
     def show_author(self):
         self.conn = psycopg2.connect(
@@ -223,6 +243,7 @@ class MainApp(QMainWindow, ui):
         # in the statusbar this message will show.
         self.statusBar().showMessage('New publisher Added')
         self.show_publisher()
+        self.show_publisher_combobox()
 
     def show_publisher(self):
         self.conn = psycopg2.connect(
@@ -260,6 +281,7 @@ class MainApp(QMainWindow, ui):
         self.cur.execute('''SELECT category_name FROM category''')
         data = self.cur.fetchall()
 
+        self.comboBox_3.clear()
         for category in data:
             print(category[0])
             self.comboBox_3.addItem(category[0])
@@ -274,6 +296,7 @@ class MainApp(QMainWindow, ui):
         self.cur.execute('''SELECT author_name FROM authors''')
         data = self.cur.fetchall()
 
+        self.comboBox_4.clear()
         for category in data:
             print(category[0])
             self.comboBox_4.addItem(category[0])
@@ -288,6 +311,7 @@ class MainApp(QMainWindow, ui):
         self.cur.execute('''SELECT publisher_name FROM publisher''')
         data = self.cur.fetchall()
 
+        self.comboBox_5.clear()
         for category in data:
             print(category[0])
             self.comboBox_5.addItem(category[0])
