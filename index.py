@@ -56,6 +56,8 @@ class MainApp(QMainWindow, ui):
         self.pushButton_16.clicked.connect(self.Add_Author)
         self.pushButton_18.clicked.connect(self.Add_Publisher)
 
+        self.pushButton_9.clicked.connect(self.Search_Books)
+
     # show theme methode
 
     def Show_Themes(self):
@@ -116,8 +118,31 @@ class MainApp(QMainWindow, ui):
         self.comboBox_5.setCurrentIndex(0)
         self.lineEdit_4.setText('')
 
+
+# serarch book from database and show to the UI
+
     def Search_Books(self):
-        pass
+
+        self.conn = psycopg2.connect(
+            host="localhost",
+            database="library",
+            user="postgres",
+            password="1814")
+        self.cur = self.conn.cursor()
+
+        book_title = self.lineEdit_8.text()
+        sql = '''SELECT * FROM book WHERE book_name= %s'''
+        self.cur.execute(sql, [(book_title)])
+        data = self.cur.fetchone()
+
+        print(data)
+        self.lineEdit_6.setText(data[1])
+        self.textEdit_2.setPlainText(data[2])
+        self.lineEdit_5.setText(data[1])
+        self.comboBox_7.setCurrentIndex(data[4])
+        self.comboBox_6.setCurrentIndex(data[5])
+        self.comboBox_8.setCurrentIndex(data[6])
+        self.lineEdit_7.setText(str(data[7]))
 
     def Edit_Books(self):
         pass
@@ -285,6 +310,7 @@ class MainApp(QMainWindow, ui):
         for category in data:
             print(category[0])
             self.comboBox_3.addItem(category[0])
+            self.comboBox_7.addItem(category[0])
 
     def show_author_combobox(self):
         self.conn = psycopg2.connect(
@@ -300,6 +326,7 @@ class MainApp(QMainWindow, ui):
         for category in data:
             print(category[0])
             self.comboBox_4.addItem(category[0])
+            self.comboBox_6.addItem(category[0])
 
     def show_publisher_combobox(self):
         self.conn = psycopg2.connect(
@@ -315,6 +342,7 @@ class MainApp(QMainWindow, ui):
         for category in data:
             print(category[0])
             self.comboBox_5.addItem(category[0])
+            self.comboBox_8.addItem(category[0])
 
 
 def main():
