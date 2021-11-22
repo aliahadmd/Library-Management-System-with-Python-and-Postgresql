@@ -21,8 +21,12 @@ class MainApp(QMainWindow, ui):
         self.setupUi(self)
         self.HandleUiChange()  # UI will change
         self.HandleButton()  # Handle button
+        self.show_author()
+        self.show_category()
+        self.show_publisher()
 
     #working with  ui#
+
     def HandleUiChange(self):
         self.Hiding_Themes()
         self.tabWidget.tabBar().setVisible(False)  # hide tab button
@@ -129,8 +133,35 @@ class MainApp(QMainWindow, ui):
         self.conn.commit()  # subitting in database
         # in the statusbar this message will show.
         self.statusBar().showMessage('New Category Added')
+        self.lineEdit_21.setText('')
+        self.show_category()
+
+    def show_category(self):
+        self.conn = psycopg2.connect(
+            host="localhost",
+            database="library",
+            user="postgres",
+            password="1814")
+        self.cur = self.conn.cursor()
+        self.cur.execute(''' SELECT category_name FROM category''')
+        data = self.cur.fetchall()
+        print(data)
+
+        if data:
+            self.tableWidget_2.setRowCount(0)
+            self.tableWidget_2.insertRow(0)
+            for row, form in enumerate(data):
+                for column, item in enumerate(form):
+                    self.tableWidget_2.setItem(
+                        row, column, QTableWidgetItem(str(item)))
+                    column += 1
+                row_position = self.tableWidget_2.rowCount()
+                self.tableWidget_2.insertRow(row_position)
+
 
 # Initialize database in author page
+
+
     def Add_Author(self):
         self.conn = psycopg2.connect(
             host="localhost",
@@ -145,10 +176,36 @@ class MainApp(QMainWindow, ui):
             INSERT INTO authors(author_name) VALUES (%s) 
         ''', (author_name,))  # inserting values
         self.conn.commit()  # subitting in database
+        self.lineEdit_22.setText('')
         # in the statusbar this message will show.
         self.statusBar().showMessage('New Author Added')
+        self.show_author()
+
+    def show_author(self):
+        self.conn = psycopg2.connect(
+            host="localhost",
+            database="library",
+            user="postgres",
+            password="1814")
+        self.cur = self.conn.cursor()
+        self.cur.execute(''' SELECT author_name FROM authors''')
+        data = self.cur.fetchall()
+
+        if data:
+            self.tableWidget_3.setRowCount(0)
+            self.tableWidget_3.insertRow(0)
+            for row, form in enumerate(data):
+                for column, item in enumerate(form):
+                    self.tableWidget_3.setItem(
+                        row, column, QTableWidgetItem(str(item)))
+                    column += 1
+                row_position = self.tableWidget_3.rowCount()
+                self.tableWidget_3.insertRow(row_position)
+
 
 # Initialize database as apublisher
+
+
     def Add_Publisher(self):
         self.conn = psycopg2.connect(
             host="localhost",
@@ -163,11 +220,35 @@ class MainApp(QMainWindow, ui):
             INSERT INTO publisher(publisher_name) VALUES (%s)
         ''', (publisher_name,))  # inserting values
         self.conn.commit()  # subitting in database
+        self.lineEdit_23.setText('')
         # in the statusbar this message will show.
         self.statusBar().showMessage('New publisher Added')
+        self.show_publisher()
 
+    def show_publisher(self):
+        self.conn = psycopg2.connect(
+            host="localhost",
+            database="library",
+            user="postgres",
+            password="1814")
+        self.cur = self.conn.cursor()
+        self.cur.execute(''' SELECT publisher_name FROM publisher''')
+        data = self.cur.fetchall()
+
+        if data:
+            self.tableWidget_4.setRowCount(0)
+            self.tableWidget_4.insertRow(0)
+            for row, form in enumerate(data):
+                for column, item in enumerate(form):
+                    self.tableWidget_4.setItem(
+                        row, column, QTableWidgetItem(str(item)))
+                    column += 1
+                row_position = self.tableWidget_4.rowCount()
+                self.tableWidget_4.insertRow(row_position)
 
 # Run this app
+
+
 def main():
     app = QApplication(sys.argv)
     window = MainApp()
