@@ -145,7 +145,7 @@
      </font>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="tab_4">
      <attribute name="title">
@@ -328,7 +328,7 @@
        </rect>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_5">
        <attribute name="title">
@@ -341,16 +341,6 @@
           <y>60</y>
           <width>251</width>
           <height>51</height>
-         </rect>
-        </property>
-       </widget>
-       <widget class="QPlainTextEdit" name="plainTextEdit">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>130</y>
-          <width>481</width>
-          <height>371</height>
          </rect>
         </property>
        </widget>
@@ -495,6 +485,16 @@
          <string>Book Price</string>
         </property>
        </widget>
+       <widget class="QTextEdit" name="textEdit">
+        <property name="geometry">
+         <rect>
+          <x>13</x>
+          <y>130</y>
+          <width>521</width>
+          <height>371</height>
+         </rect>
+        </property>
+       </widget>
       </widget>
       <widget class="QWidget" name="tab_6">
        <attribute name="title">
@@ -574,16 +574,6 @@
         </property>
         <property name="text">
          <string>Book Code</string>
-        </property>
-       </widget>
-       <widget class="QPlainTextEdit" name="plainTextEdit_2">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>140</y>
-          <width>481</width>
-          <height>361</height>
-         </rect>
         </property>
        </widget>
        <widget class="QLabel" name="label_11">
@@ -708,6 +698,16 @@
         </property>
         <property name="text">
          <string>Delete</string>
+        </property>
+       </widget>
+       <widget class="QTextEdit" name="textEdit_2">
+        <property name="geometry">
+         <rect>
+          <x>13</x>
+          <y>150</y>
+          <width>491</width>
+          <height>351</height>
+         </rect>
         </property>
        </widget>
       </widget>
