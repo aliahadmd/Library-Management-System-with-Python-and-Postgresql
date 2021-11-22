@@ -58,6 +58,8 @@ class MainApp(QMainWindow, ui):
         self.pushButton_16.clicked.connect(self.Add_Author)
         self.pushButton_18.clicked.connect(self.Add_Publisher)
         self.pushButton_10.clicked.connect(self.Delete_Books)
+        self.pushButton_11.clicked.connect(self.Add_New_users)
+        self.pushButton_12.clicked.connect(self.login)
 
     # show theme methode
 
@@ -86,6 +88,7 @@ class MainApp(QMainWindow, ui):
 
 
 # initialize Database in Book page
+
 
     def Add_New_Book(self):
         self.conn = psycopg2.connect(
@@ -122,6 +125,7 @@ class MainApp(QMainWindow, ui):
 
 # search book from database and show to the UI
 
+
     def Search_Books(self):
 
         self.conn = psycopg2.connect(
@@ -147,6 +151,7 @@ class MainApp(QMainWindow, ui):
 
 
 # edit book from database and show to the UI
+
 
     def Edit_Books(self):
         self.conn = psycopg2.connect(
@@ -176,7 +181,6 @@ class MainApp(QMainWindow, ui):
 
 # delete book from database and show to the UI
 
-
     def Delete_Books(self):
         self.conn = psycopg2.connect(
             host="localhost",
@@ -198,11 +202,55 @@ class MainApp(QMainWindow, ui):
 
 # Initialize Database in Users page
 
+
     def Add_New_users(self):
-        pass
+        self.conn = psycopg2.connect(
+            host="localhost",
+            database="library",
+            user="postgres",
+            password="1814")
+        self.cur = self.conn.cursor()
+
+        username = self.lineEdit_9.text()
+        email = self.lineEdit_10.text()
+        password = self.lineEdit_12.text()
+        password2 = self.lineEdit_11.text()
+
+        if password == password2:
+            self.cur.execute('''
+                             INSERT INTO users(user_name, user_email, user_password)
+                             VALUES (%s, %s, %s)
+                             ''', (username, email, password))
+
+            self.conn.commit()
+            self.statusBar().showMessage('New user Added')
+        else:
+            self.label_17.setText('Your password is not matched!')
 
     def login(self):
-        pass
+        self.conn = psycopg2.connect(
+            host="localhost",
+            database="library",
+            user="postgres",
+            password="1814")
+        self.cur = self.conn.cursor()
+
+        username = self.lineEdit_14.text()
+        password = self.lineEdit_13.text()
+
+        sql = '''SELECT * FROM users'''
+
+        self.cur.execute(sql)
+        data = self.cur.fetchall()
+        for row in data:
+            if username == row[1] and password == row[3]:
+                print('user match')
+                self.statusBar().showMessage(" Login Successful!")
+                self.groupBox_4.setEnabled(True)
+
+                self.lineEdit_17.setText(row[1])
+                self.lineEdit_20.setText(row[2])
+                self.lineEdit_15.setText(row[3])
 
     def Edit_Users(self):
         pass
@@ -252,6 +300,7 @@ class MainApp(QMainWindow, ui):
 
 # Initialize database in author page
 
+
     def Add_Author(self):
         self.conn = psycopg2.connect(
             host="localhost",
@@ -295,6 +344,7 @@ class MainApp(QMainWindow, ui):
 
 
 # Initialize database as apublisher
+
 
     def Add_Publisher(self):
         self.conn = psycopg2.connect(
