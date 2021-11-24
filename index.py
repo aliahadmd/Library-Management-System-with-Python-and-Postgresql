@@ -30,6 +30,9 @@ class MainApp(QMainWindow, ui):
         self.show_author_combobox()
         self.show_publisher_combobox()
 
+        self.Show_All_Clients()
+        self.show_all_books()
+
     #working with  ui#
 
     def HandleUiChange(self):
@@ -104,6 +107,29 @@ class MainApp(QMainWindow, ui):
 
 # initialize Database in Book page
 
+    def show_all_books(self):
+        self.conn = psycopg2.connect(
+            host="localhost",
+            database="library",
+            user="postgres",
+            password="1814")
+        self.cur = self.conn.cursor()
+
+        self.cur.execute(
+            ''' SELECT book_code, book_name, book_description, book_category, book_author, book_publisher, book_price FROM book ''')
+        data = self.cur.fetchall()
+        self.tableWidget_5.setRowCount(0)
+        self.tableWidget_5.insertRow(0)
+
+        for row, form in enumerate(data):
+            for column, item in enumerate(form):
+                self.tableWidget_5.setItem(
+                    row, column, QTableWidgetItem(str(item)))
+                column += 1
+            row_position = self.tableWidget_5.rowCount()
+            self.tableWidget_5.insertRow(row_position)
+        self.conn.close()
+
     def Add_New_Book(self):
         self.conn = psycopg2.connect(
             host="localhost",
@@ -115,9 +141,9 @@ class MainApp(QMainWindow, ui):
         book_title = self.lineEdit_2.text()
         book_description = self.textEdit.toPlainText()
         book_code = self.lineEdit_3.text()
-        book_category = self.comboBox_3.currentIndex()
-        book_author = self.comboBox_4.currentIndex()
-        book_publisher = self.comboBox_5.currentIndex()
+        book_category = self.comboBox_3.currentText()
+        book_author = self.comboBox_4.currentText()
+        book_publisher = self.comboBox_5.currentText()
         book_price = self.lineEdit_4.text()
 
         self.cur.execute('''
@@ -135,6 +161,7 @@ class MainApp(QMainWindow, ui):
         self.comboBox_4.setCurrentIndex(0)
         self.comboBox_5.setCurrentIndex(0)
         self.lineEdit_4.setText('')
+        self.show_all_books()
 
 
 # search book from database and show to the UI
@@ -157,9 +184,9 @@ class MainApp(QMainWindow, ui):
         self.lineEdit_6.setText(data[1])
         self.textEdit_2.setPlainText(data[2])
         self.lineEdit_5.setText(data[1])
-        self.comboBox_7.setCurrentIndex(data[4])
-        self.comboBox_6.setCurrentIndex(data[5])
-        self.comboBox_8.setCurrentIndex(data[6])
+        self.comboBox_7.setCurrentText(data[4])
+        self.comboBox_6.setCurrentText(data[5])
+        self.comboBox_8.setCurrentText(data[6])
         self.lineEdit_7.setText(str(data[7]))
 
 
@@ -176,9 +203,9 @@ class MainApp(QMainWindow, ui):
         book_title = self.lineEdit_6.text()
         book_description = self.textEdit_2.toPlainText()
         book_code = self.lineEdit_5.text()
-        book_category = self.comboBox_7.currentIndex()
-        book_author = self.comboBox_6.currentIndex()
-        book_publisher = self.comboBox_8.currentIndex()
+        book_category = self.comboBox_7.currentText()
+        book_author = self.comboBox_6.currentText()
+        book_publisher = self.comboBox_8.currentText()
         book_price = self.lineEdit_7.text()
 
         search_book_title = self.lineEdit_8.text()
@@ -189,6 +216,7 @@ class MainApp(QMainWindow, ui):
 
         self.conn.commit()
         self.statusBar().showMessage('book updated')
+        self.show_all_books()
 
 
 # delete book from database and show to the UI
@@ -211,9 +239,33 @@ class MainApp(QMainWindow, ui):
             self.cur.execute(sql, [(book_title)])
             self.conn.commit()
             self.statusBar().showMessage('Book Deleted')
+            self.show_all_books()
 
 
 # Initillize client
+
+    def Show_All_Clients(self):
+        self.conn = psycopg2.connect(
+            host="localhost",
+            database="library",
+            user="postgres",
+            password="1814")
+        self.cur = self.conn.cursor()
+
+        self.cur.execute(
+            ''' SELECT client_name, client_email, client_nationalid FROM clients ''')
+        data = self.cur.fetchall()
+        self.tableWidget_6.setRowCount(0)
+        self.tableWidget_6.insertRow(0)
+
+        for row, form in enumerate(data):
+            for column, item in enumerate(form):
+                self.tableWidget_6.setItem(
+                    row, column, QTableWidgetItem(str(item)))
+                column += 1
+            row_position = self.tableWidget_6.rowCount()
+            self.tableWidget_6.insertRow(row_position)
+        self.conn.close()
 
     def Add_New_Client(self):
         client_name = self.lineEdit_18.text()
@@ -232,9 +284,7 @@ class MainApp(QMainWindow, ui):
         self.conn.commit()
         self.conn.close()
         self.statusBar().showMessage("New client Added")
-
-    def Show_All_Clients(self):
-        pass
+        self.Show_All_Clients()
 
     def Search_client(self):
         client_nationalid = self.lineEdit_28.text()
@@ -272,6 +322,7 @@ class MainApp(QMainWindow, ui):
         self.conn.commit()
         self.conn.close()
         self.statusBar().showMessage('Client Data update')
+        self.Show_All_Clients()
 
     def Delete_Client(self):
         client_original_national_id = self.lineEdit_28.text()
@@ -289,6 +340,7 @@ class MainApp(QMainWindow, ui):
         self.conn.commit()
         self.conn.close()
         self.statusBar().showMessage(' Client delete!')
+        self.Show_All_Clients()
 
 
 # Initialize Database in Users page

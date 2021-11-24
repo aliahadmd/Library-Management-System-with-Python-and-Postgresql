@@ -145,7 +145,7 @@
      </font>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="tab_4">
      <attribute name="title">
@@ -338,9 +338,9 @@
         <property name="geometry">
          <rect>
           <x>-5</x>
-          <y>21</y>
-          <width>701</width>
-          <height>481</height>
+          <y>1</y>
+          <width>981</width>
+          <height>511</height>
          </rect>
         </property>
         <column>
@@ -777,7 +777,7 @@
        </rect>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_12">
        <attribute name="title">
@@ -787,9 +787,9 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>10</y>
-          <width>581</width>
-          <height>481</height>
+          <y>0</y>
+          <width>971</width>
+          <height>511</height>
          </rect>
         </property>
         <column>
