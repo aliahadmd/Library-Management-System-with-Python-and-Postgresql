@@ -22,6 +22,7 @@ class MainApp(QMainWindow, ui):
         self.setupUi(self)
         self.HandleUiChange()  # UI will change
         self.HandleButton()  # Handle button
+        self.Dark_blue_themes()
         self.show_author()
         self.show_category()
         self.show_publisher()
@@ -49,6 +50,7 @@ class MainApp(QMainWindow, ui):
             self.Open_Users_Tab)  # when user button will select then another tab will open.
         self.pushButton_4.clicked.connect(
             self.Open_Settings_Tab)  # when setting button is selected then another tab will open.
+        self.pushButton_26.clicked.connect(self.Open_Clients_Tab)
 
         # Connect database functionality in UI
         self.pushButton_7.clicked.connect(self.Add_New_Book)
@@ -60,6 +62,15 @@ class MainApp(QMainWindow, ui):
         self.pushButton_10.clicked.connect(self.Delete_Books)
         self.pushButton_11.clicked.connect(self.Add_New_users)
         self.pushButton_12.clicked.connect(self.login)
+        self.pushButton_13.clicked.connect(self.Edit_Users)
+        self.pushButton_6.clicked.connect(self.Dark_Orange_theme)
+        self.pushButton_19.clicked.connect(self.Dark_blue_themes)
+        self.pushButton_21.clicked.connect(self.Dark_gray_theme)
+        self.pushButton_20.clicked.connect(self.QDark_theme)
+        self.pushButton_14.clicked.connect(self.Add_New_Client)
+        self.pushButton_24.clicked.connect(self.Search_client)
+        self.pushButton_25.clicked.connect(self.Edit_Client)
+        self.pushButton_23.clicked.connect(self.Delete_Client)
 
     # show theme methode
 
@@ -80,15 +91,18 @@ class MainApp(QMainWindow, ui):
     #setting up user button to another tab#
 
     def Open_Users_Tab(self):
+        self.tabWidget.setCurrentIndex(3)
+
+    def Open_Clients_Tab(self):
         self.tabWidget.setCurrentIndex(2)
+
     #setting up setting button to one tab#
 
     def Open_Settings_Tab(self):
-        self.tabWidget.setCurrentIndex(3)
+        self.tabWidget.setCurrentIndex(4)
 
 
 # initialize Database in Book page
-
 
     def Add_New_Book(self):
         self.conn = psycopg2.connect(
@@ -125,7 +139,6 @@ class MainApp(QMainWindow, ui):
 
 # search book from database and show to the UI
 
-
     def Search_Books(self):
 
         self.conn = psycopg2.connect(
@@ -151,7 +164,6 @@ class MainApp(QMainWindow, ui):
 
 
 # edit book from database and show to the UI
-
 
     def Edit_Books(self):
         self.conn = psycopg2.connect(
@@ -181,6 +193,7 @@ class MainApp(QMainWindow, ui):
 
 # delete book from database and show to the UI
 
+
     def Delete_Books(self):
         self.conn = psycopg2.connect(
             host="localhost",
@@ -200,8 +213,85 @@ class MainApp(QMainWindow, ui):
             self.statusBar().showMessage('Book Deleted')
 
 
-# Initialize Database in Users page
+# Initillize client
 
+    def Add_New_Client(self):
+        client_name = self.lineEdit_18.text()
+        client_email = self.lineEdit_19.text()
+        client_nationalId = self.lineEdit_24.text()
+        self.conn = psycopg2.connect(
+            host="localhost",
+            database="library",
+            user="postgres",
+            password="1814")
+        self.cur = self.conn.cursor()
+        self.cur.execute('''
+                         INSERT INTO clients(client_name, client_email, client_nationalid)
+                         VALUES (%s, %s, %s)
+                         ''', (client_name, client_email, client_nationalId))
+        self.conn.commit()
+        self.conn.close()
+        self.statusBar().showMessage("New client Added")
+
+    def Show_All_Clients(self):
+        pass
+
+    def Search_client(self):
+        client_nationalid = self.lineEdit_28.text()
+        self.conn = psycopg2.connect(
+            host="localhost",
+            database="library",
+            user="postgres",
+            password="1814")
+        self.cur = self.conn.cursor()
+
+        sql = '''SELECT * FROM clients WHERE client_nationalid=%s'''
+        self.cur.execute(sql, [(client_nationalid)])
+        data = self.cur.fetchone()
+        print(data)
+
+        self.lineEdit_25.setText(data[1])
+        self.lineEdit_26.setText(data[2])
+        self.lineEdit_27.setText(data[3])
+
+    def Edit_Client(self):
+
+        client_original_national_id = self.lineEdit_28.text()
+        client_name = self.lineEdit_25.text()
+        client_email = self.lineEdit_26.text()
+        client_nationalId = self.lineEdit_27.text()
+        self.conn = psycopg2.connect(
+            host="localhost",
+            database="library",
+            user="postgres",
+            password="1814")
+        self.cur = self.conn.cursor()
+        self.cur.execute('''
+                         UPDATE clients SET client_name=%s, client_email=%s, client_nationalid=%s WHERE client_nationalid= %s
+                         ''', (client_name, client_email, client_nationalId, client_original_national_id))
+        self.conn.commit()
+        self.conn.close()
+        self.statusBar().showMessage('Client Data update')
+
+    def Delete_Client(self):
+        client_original_national_id = self.lineEdit_28.text()
+        worning_message = QMessageBox.warning(
+            self, "Delete client", "Are you sure you want to delete?", QMessageBox.Yes | QMessageBox.No)
+
+        self.conn = psycopg2.connect(
+            host="localhost",
+            database="library",
+            user="postgres",
+            password="1814")
+        self.cur = self.conn.cursor()
+        sql = ''' DELETE FROM clients WHERE client_nationalid=%s'''
+        self.cur.execute(sql, [(client_original_national_id)])
+        self.conn.commit()
+        self.conn.close()
+        self.statusBar().showMessage(' Client delete!')
+
+
+# Initialize Database in Users page
 
     def Add_New_users(self):
         self.conn = psycopg2.connect(
@@ -253,7 +343,29 @@ class MainApp(QMainWindow, ui):
                 self.lineEdit_15.setText(row[3])
 
     def Edit_Users(self):
-        pass
+        username = self.lineEdit_17.text()
+        email = self.lineEdit_20.text()
+        password = self.lineEdit_15.text()
+        password2 = self.lineEdit_16.text()
+
+        original_name = self.lineEdit_14.text()
+
+        if password == password2:
+            self.conn = psycopg2.connect(
+                host="localhost",
+                database="library",
+                user="postgres",
+                password="1814")
+            self.cur = self.conn.cursor()
+
+            self.cur.execute('''
+                UPDATE users SET user_name =%s, user_email=%s, user_password=%s WHERE user_name=%s
+                ''', (username, email, password, original_name))
+            self.conn.commit()
+            self.statusBar().showMessage(' User Data update successfully')
+
+        else:
+            print('make sure you enterd your password correctly')
 
 # initialize database in category page
     def Add_Category(self):
@@ -300,7 +412,6 @@ class MainApp(QMainWindow, ui):
 
 # Initialize database in author page
 
-
     def Add_Author(self):
         self.conn = psycopg2.connect(
             host="localhost",
@@ -312,7 +423,7 @@ class MainApp(QMainWindow, ui):
         # selecting text and storing in the variable
         author_name = self.lineEdit_22.text()
         self.cur.execute('''
-            INSERT INTO authors(author_name) VALUES (%s) 
+            INSERT INTO authors(author_name) VALUES (%s)
         ''', (author_name,))  # inserting values
         self.conn.commit()  # subitting in database
         self.lineEdit_22.setText('')
@@ -344,7 +455,6 @@ class MainApp(QMainWindow, ui):
 
 
 # Initialize database as apublisher
-
 
     def Add_Publisher(self):
         self.conn = psycopg2.connect(
@@ -439,6 +549,29 @@ class MainApp(QMainWindow, ui):
             print(category[0])
             self.comboBox_5.addItem(category[0])
             self.comboBox_8.addItem(category[0])
+
+
+# UI themes make
+
+    def Dark_blue_themes(self):
+        style = open('themes/dark_blue.css', 'r')
+        style = style.read()
+        self.setStyleSheet(style)
+
+    def Dark_gray_theme(self):
+        style = open('themes/dark_gray.css', 'r')
+        style = style.read()
+        self.setStyleSheet(style)
+
+    def Dark_Orange_theme(self):
+        style = open('themes/dark_orange.css', 'r')
+        style = style.read()
+        self.setStyleSheet(style)
+
+    def QDark_theme(self):
+        style = open('themes/qdark.css', 'r')
+        style = style.read()
+        self.setStyleSheet(style)
 
 
 def main():
