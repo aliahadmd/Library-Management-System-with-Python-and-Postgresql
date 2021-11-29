@@ -4,6 +4,7 @@
 # The project is made by pyQt5. Its a crossplatfrom  gui.
 # import some stuff
 
+from os import execl
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
@@ -154,7 +155,6 @@ class MainApp(QMainWindow, ui):
 
 # intilize day to day to day operation
 
-
     def handle_day_operation(self):
         book_title = self.lineEdit_29.text()
         client_name = self.lineEdit.text()
@@ -261,7 +261,6 @@ class MainApp(QMainWindow, ui):
 
 # search book from database and show to the UI
 
-
     def Search_Books(self):
 
         self.conn = psycopg2.connect(
@@ -287,7 +286,6 @@ class MainApp(QMainWindow, ui):
 
 
 # edit book from database and show to the UI
-
 
     def Edit_Books(self):
         self.conn = psycopg2.connect(
@@ -318,6 +316,7 @@ class MainApp(QMainWindow, ui):
 
 # delete book from database and show to the UI
 
+
     def Delete_Books(self):
         self.conn = psycopg2.connect(
             host="localhost",
@@ -339,7 +338,6 @@ class MainApp(QMainWindow, ui):
 
 
 # Initillize client
-
 
     def Show_All_Clients(self):
         self.conn = psycopg2.connect(
@@ -441,7 +439,6 @@ class MainApp(QMainWindow, ui):
 
 
 # Initialize Database in Users page
-
 
     def Add_New_users(self):
         self.conn = psycopg2.connect(
@@ -562,7 +559,6 @@ class MainApp(QMainWindow, ui):
 
 # Initialize database in author page
 
-
     def Add_Author(self):
         self.conn = psycopg2.connect(
             host="localhost",
@@ -606,7 +602,6 @@ class MainApp(QMainWindow, ui):
 
 
 # Initialize database as apublisher
-
 
     def Add_Publisher(self):
         self.conn = psycopg2.connect(
@@ -704,7 +699,6 @@ class MainApp(QMainWindow, ui):
 
 
 # UI themes make
-
 
     def Dark_blue_themes(self):
         style = open('themes/dark_blue.css', 'r')
