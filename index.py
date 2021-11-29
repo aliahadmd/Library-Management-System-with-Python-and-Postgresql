@@ -10,10 +10,53 @@ from PyQt5.QtWidgets import *
 import sys
 import psycopg2  # postgresql database
 from PyQt5.uic import loadUiType
+import datetime
 
 
-ui, _ = loadUiType('library.ui')  # loading the .ui file
+ui, _ = loadUiType('library.ui')  # loading the library.ui file
+login, _ = loadUiType('login.ui')  # loading the login ui file
 
+
+# login handle start
+
+class Login(QWidget, login):
+    def __init__(self):
+        QWidget.__init__(self)
+        self.setupUi(self)
+        self.pushButton.clicked.connect(self.Handel_Login)
+        style = open('themes/dark_gray.css', 'r')
+        style = style.read()
+        self.setStyleSheet(style)
+
+    def Handel_Login(self):
+        self.conn = psycopg2.connect(
+            host="localhost",
+            database="library",
+            user="postgres",
+            password="1814")
+        self.cur = self.conn.cursor()
+
+        username = self.lineEdit.text()
+        password = self.lineEdit_2.text()
+
+        sql = ''' SELECT * FROM users'''
+
+        self.cur.execute(sql)
+
+        data = self.cur.fetchall()
+        for row in data:
+            if username == row[1] and password == row[3]:
+                print('user match')
+                self.window2 = MainApp()
+                self.close()
+                self.window2.show()
+
+            else:
+                self.label.setText(
+                    'Make Sure You Enterd Your Username And Password Correctly')
+
+
+# login handle end
 
 # This is the main class to handle all user interface functionality.
 class MainApp(QMainWindow, ui):
@@ -32,6 +75,8 @@ class MainApp(QMainWindow, ui):
 
         self.Show_All_Clients()
         self.show_all_books()
+
+        self.Show_ALL_OPeration()
 
     #working with  ui#
 
@@ -75,6 +120,8 @@ class MainApp(QMainWindow, ui):
         self.pushButton_25.clicked.connect(self.Edit_Client)
         self.pushButton_23.clicked.connect(self.Delete_Client)
 
+        self.pushButton_17.clicked.connect(self.handle_day_operation)
+
     # show theme methode
 
     def Show_Themes(self):
@@ -105,6 +152,54 @@ class MainApp(QMainWindow, ui):
         self.tabWidget.setCurrentIndex(4)
 
 
+# intilize day to day to day operation
+
+
+    def handle_day_operation(self):
+        book_title = self.lineEdit_29.text()
+        client_name = self.lineEdit.text()
+        type = self.comboBox_9.currentText()
+        days_number = self.comboBox_10.currentIndex() + 1
+        today_date = (datetime.date.today())
+        to_date = today_date + datetime.timedelta(days=days_number)
+        self.conn = psycopg2.connect(
+            host="localhost",
+            database="library",
+            user="postgres",
+            password="1814")
+        self.cur = self.conn.cursor()
+        self.cur.execute('''
+                         INSERT INTO dayoperations(book_name, client, type, days, date, to_date)
+                         VALUES(%s, %s, %s, %s, %s, %s)
+                         ''', (book_title, client_name, type, days_number, today_date, to_date))
+        self.conn.commit()
+        self.statusBar().showMessage('New operation Added')
+
+        self.Show_ALL_OPeration()
+
+    def Show_ALL_OPeration(self):
+        self.conn = psycopg2.connect(
+            host="localhost",
+            database="library",
+            user="postgres",
+            password="1814")
+        self.cur = self.conn.cursor()
+
+        self.cur.execute(''' 
+                          SELECT book_name, client, type, days, date, to_date FROM dayoperations''')
+        data = self.cur.fetchall()
+        print(data)
+        self.tableWidget.setRowCount(0)
+
+        self.tableWidget.insertRow(0)
+        for row, form in enumerate(data):
+            for column, item in enumerate(form):
+                self.tableWidget.setItem(
+                    row, column, QTableWidgetItem(str(item)))
+                column += 1
+
+            row_position = self.tableWidget.rowCount()
+            self.tableWidget.insertRow(row_position)
 # initialize Database in Book page
 
     def show_all_books(self):
@@ -166,6 +261,7 @@ class MainApp(QMainWindow, ui):
 
 # search book from database and show to the UI
 
+
     def Search_Books(self):
 
         self.conn = psycopg2.connect(
@@ -191,6 +287,7 @@ class MainApp(QMainWindow, ui):
 
 
 # edit book from database and show to the UI
+
 
     def Edit_Books(self):
         self.conn = psycopg2.connect(
@@ -221,7 +318,6 @@ class MainApp(QMainWindow, ui):
 
 # delete book from database and show to the UI
 
-
     def Delete_Books(self):
         self.conn = psycopg2.connect(
             host="localhost",
@@ -243,6 +339,7 @@ class MainApp(QMainWindow, ui):
 
 
 # Initillize client
+
 
     def Show_All_Clients(self):
         self.conn = psycopg2.connect(
@@ -344,6 +441,7 @@ class MainApp(QMainWindow, ui):
 
 
 # Initialize Database in Users page
+
 
     def Add_New_users(self):
         self.conn = psycopg2.connect(
@@ -464,6 +562,7 @@ class MainApp(QMainWindow, ui):
 
 # Initialize database in author page
 
+
     def Add_Author(self):
         self.conn = psycopg2.connect(
             host="localhost",
@@ -507,6 +606,7 @@ class MainApp(QMainWindow, ui):
 
 
 # Initialize database as apublisher
+
 
     def Add_Publisher(self):
         self.conn = psycopg2.connect(
@@ -605,6 +705,7 @@ class MainApp(QMainWindow, ui):
 
 # UI themes make
 
+
     def Dark_blue_themes(self):
         style = open('themes/dark_blue.css', 'r')
         style = style.read()
@@ -628,7 +729,7 @@ class MainApp(QMainWindow, ui):
 
 def main():
     app = QApplication(sys.argv)
-    window = MainApp()
+    window = Login()
     window.show()
     app.exec_()
 
